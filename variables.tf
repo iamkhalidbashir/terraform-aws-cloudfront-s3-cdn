@@ -27,6 +27,12 @@ variable "aliases" {
   default     = []
 }
 
+variable "bucket_lifecycle_rules" {
+  type        = list(map)
+  description = "List of origin bucket lifecycle rules"
+  default     = []
+}
+
 variable "additional_bucket_policy" {
   type        = string
   default     = "{}"
