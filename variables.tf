@@ -28,7 +28,29 @@ variable "aliases" {
 }
 
 variable "bucket_lifecycle_rules" {
-  type        = list(map)
+  type        = list(object({
+    id = string
+    enabled = bool
+    prefix = string
+    abort_incomplete_multipart_upload_days = number
+    transition = list(object({
+      days = number
+      date = string
+      storage_class = string
+    }))
+    expiration = object({
+      days = number
+      date = string
+      expired_object_delete_marker = string
+    })
+    noncurrent_version_expiration = object({
+      days = number
+    })
+    noncurrent_version_transition = list(object({
+      days = number
+      storage_class = string
+    }))
+  }))
   description = "List of origin bucket lifecycle rules"
   default     = []
 }

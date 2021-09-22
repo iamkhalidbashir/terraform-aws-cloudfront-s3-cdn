@@ -286,10 +286,8 @@ resource "aws_s3_bucket" "origin" {
       id    = lookup(lifecycle_rule.value, "id", null)
       enabled    = lookup(lifecycle_rule.value, "enabled", null)
       prefix    = lookup(lifecycle_rule.value, "prefix", null)
-      tags    = lookup(lifecycle_rule.value, "tags", null)
       abort_incomplete_multipart_upload_days    = lookup(lifecycle_rule.value, "abort_incomplete_multipart_upload_days", null)
-      noncurrent_version_expiration    = lookup(lifecycle_rule.value, "noncurrent_version_expiration", null)
-      noncurrent_version_transition    = lookup(lifecycle_rule.value, "noncurrent_version_transition", null)
+      
       dynamic "transition" {
         for_each = lookup(lifecycle_rule.value, "transition", [])
         content {
@@ -300,11 +298,26 @@ resource "aws_s3_bucket" "origin" {
       }
 
        dynamic "expiration" {
-        for_each = lookup(lifecycle_rule.value, "expiration", [])
+        for_each = lookup(lifecycle_rule.value, "expiration", null) != null ? [lookup(lifecycle_rule.value, "expiration")] : []
         content {
           days    = lookup(expiration.value, "days", null)
           date    = lookup(expiration.value, "date", null)
           expired_object_delete_marker    = lookup(expiration.value, "expired_object_delete_marker", null)
+        }
+      }
+
+       dynamic "noncurrent_version_expiration" {
+        for_each = lookup(lifecycle_rule.value, "noncurrent_version_expiration", null) != null ? [lookup(lifecycle_rule.value, "noncurrent_version_expiration")] : []
+        content {
+          days    = lookup(noncurrent_version_expiration.value, "days", null)
+        }
+      }
+
+       dynamic "noncurrent_version_transition" {
+        for_each = lookup(lifecycle_rule.value, "noncurrent_version_transition", [])
+        content {
+          days    = lookup(noncurrent_version_transition.value, "days", null)
+          storage_class    = lookup(noncurrent_version_transition.value, "storage_class", null)
         }
       }
     }
